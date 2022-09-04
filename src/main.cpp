@@ -5,6 +5,8 @@
 
 
 XINPUT_STATE state;
+int CursorMoveSpeed = 5.0f;
+
 struct GAMEPAD{
 
     bool GAMEPAD_DPAD_UP          = false;
@@ -48,6 +50,20 @@ int getController(){
 
 }
 
+void debugLog(){
+
+    printf(
+        "LeftStick: [%f, %f]\nRightStick: [%f, %f]\nShoulders: [%f, %f]\n\n UP: %d\nDown: %d\nLeft: %d\nRight: %d\n\nA: %d\nB: %d\nX: %d\nY: %d\n\nStart: %d\nBack: %d",
+        XINPUT_BUTTONS.GAMEPAD_LEFT_THUMB_X,XINPUT_BUTTONS.GAMEPAD_LEFT_THUMB_Y,
+        XINPUT_BUTTONS.GAMEPAD_RIGHT_THUMB_X,XINPUT_BUTTONS.GAMEPAD_RIGHT_THUMB_Y,
+        XINPUT_BUTTONS.GAMEPAD_LEFT_SHOULDER,XINPUT_BUTTONS.GAMEPAD_RIGHT_SHOULDER,
+        XINPUT_BUTTONS.GAMEPAD_DPAD_UP,XINPUT_BUTTONS.GAMEPAD_DPAD_DOWN,XINPUT_BUTTONS.GAMEPAD_DPAD_LEFT,XINPUT_BUTTONS.GAMEPAD_DPAD_RIGHT,
+        XINPUT_BUTTONS.GAMEPAD_A,XINPUT_BUTTONS.GAMEPAD_B,XINPUT_BUTTONS.GAMEPAD_X,XINPUT_BUTTONS.GAMEPAD_Y,
+        XINPUT_BUTTONS.GAMEPAD_START,XINPUT_BUTTONS.GAMEPAD_BACK
+    );
+
+}
+
 void handleMovements(int ControllerID = -1){
 
     XInputGetState( ControllerID, &state );
@@ -73,32 +89,41 @@ void handleMovements(int ControllerID = -1){
 
     XINPUT_BUTTONS.GAMEPAD_START= (state.Gamepad.wButtons & XINPUT_GAMEPAD_START) != 0;
     XINPUT_BUTTONS.GAMEPAD_BACK = (state.Gamepad.wButtons & XINPUT_GAMEPAD_BACK) != 0;
+    
 }
 
-void debugLog(){
+void handleMouseMove(){
+    POINT cursor;
+    GetCursorPos(&cursor);
 
-    printf(
-        "LeftStick: [%f, %f]\nRightStick: [%f, %f]\nShoulders: [%f, %f]\n\n UP: %d\nDown: %d\nLeft: %d\nRight: %d\n\nA: %d\nB: %d\nX: %d\nY: %d\n\nStart: %d\nBack: %d",
-        XINPUT_BUTTONS.GAMEPAD_LEFT_THUMB_X,XINPUT_BUTTONS.GAMEPAD_LEFT_THUMB_Y,
-        XINPUT_BUTTONS.GAMEPAD_RIGHT_THUMB_X,XINPUT_BUTTONS.GAMEPAD_RIGHT_THUMB_Y,
-        XINPUT_BUTTONS.GAMEPAD_LEFT_SHOULDER,XINPUT_BUTTONS.GAMEPAD_RIGHT_SHOULDER,
-        XINPUT_BUTTONS.GAMEPAD_DPAD_UP,XINPUT_BUTTONS.GAMEPAD_DPAD_DOWN,XINPUT_BUTTONS.GAMEPAD_DPAD_LEFT,XINPUT_BUTTONS.GAMEPAD_DPAD_RIGHT,
-        XINPUT_BUTTONS.GAMEPAD_A,XINPUT_BUTTONS.GAMEPAD_B,XINPUT_BUTTONS.GAMEPAD_X,XINPUT_BUTTONS.GAMEPAD_Y,
-        XINPUT_BUTTONS.GAMEPAD_START,XINPUT_BUTTONS.GAMEPAD_BACK
-    );
+    float dx = XINPUT_BUTTONS.GAMEPAD_LEFT_THUMB_X * CursorMoveSpeed;
+    float dy = XINPUT_BUTTONS.GAMEPAD_LEFT_THUMB_Y * CursorMoveSpeed;
 
+    float x = cursor.x + dx  ;
+    float y = cursor.y - dy  ;
+
+    SetCursorPos((int)x, (int)y);
+}
+
+void handleMouseClick(){
+    
 }
 
 int main(){
     
     int ControllerID = getController();
+    if(ControllerID == -1) return 1;
+    
+    printf("Controller Dectected: %d, (ctrl + c) to stop.\n",ControllerID);
 
     while(true){
         handleMovements(ControllerID);
-        debugLog();
+        handleMouseMove();
+        handleMouseClick();
 
+        //debugLog();
+        //system("cls");
         Sleep(10);
-        system("cls"); 
     }
         
     return 0;
