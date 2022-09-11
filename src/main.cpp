@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <math.h>
 
+#include "TUI.h"
 
 INPUT input;
 POINT cursor;
@@ -13,29 +14,29 @@ int CursorScrollSpeed = 16.0f;
 
 struct GAMEPAD{
 
-    bool GAMEPAD_DPAD_UP          = false;
-    bool GAMEPAD_DPAD_DOWN        = false;
-    bool GAMEPAD_DPAD_LEFT        = false;
-    bool GAMEPAD_DPAD_RIGHT       = false;
+    bool GAMEPAD_DPAD_UP             = false;
+    bool GAMEPAD_DPAD_DOWN           = false;
+    bool GAMEPAD_DPAD_LEFT           = false;
+    bool GAMEPAD_DPAD_RIGHT          = false;
 
-    bool GAMEPAD_START            = false;
-    bool GAMEPAD_BACK             = false;
+    bool GAMEPAD_START               = false;
+    bool GAMEPAD_BACK                = false;
 
-    bool GAMEPAD_A                = false;
-    bool GAMEPAD_B                = false;
-    bool GAMEPAD_X                = false;
-    bool GAMEPAD_Y                = false;
+    bool GAMEPAD_A                   = false;
+    bool GAMEPAD_B                   = false;
+    bool GAMEPAD_X                   = false;
+    bool GAMEPAD_Y                   = false;
 
-    bool GAMEPAD_LEFT_THUMB_TRIGGER     = false;
-    bool GAMEPAD_RIGHT_THUMB_TRIGGER     = false;
+    bool GAMEPAD_LEFT_THUMB_TRIGGER  = false;
+    bool GAMEPAD_RIGHT_THUMB_TRIGGER = false;
 
-    float GAMEPAD_LEFT_THUMB_X    = 0.0f;
-    float GAMEPAD_LEFT_THUMB_Y    = 0.0f;
-    float GAMEPAD_RIGHT_THUMB_X   = 0.0f;
-    float GAMEPAD_RIGHT_THUMB_Y   = 0.0f;
+    float GAMEPAD_LEFT_THUMB_X       = 0.0f;
+    float GAMEPAD_LEFT_THUMB_Y       = 0.0f;
+    float GAMEPAD_RIGHT_THUMB_X      = 0.0f;
+    float GAMEPAD_RIGHT_THUMB_Y      = 0.0f;
 
-    float GAMEPAD_LEFT_SHOULDER   = 0.0f;
-    float GAMEPAD_RIGHT_SHOULDER  = 0.0f;
+    float GAMEPAD_LEFT_SHOULDER      = 0.0f;
+    float GAMEPAD_RIGHT_SHOULDER     = 0.0f;
   
 }KEY_PRESSED, ACTION;
 
@@ -346,15 +347,20 @@ void handleKeyboard(){
         SendInput(1, &input, sizeof(INPUT));
         ACTION.GAMEPAD_Y = false;
     }
-    
+
 }
 
 int main(){
     
     int ControllerID = getController();
-    if(ControllerID == -1) return 1;
+    if(ControllerID == -1){
+        printf("No Controller Dectected!");
+        return 1;
+    }
     
     printf("Controller Dectected [dwUserIndex: %d], (ctrl + c) to stop.\n",ControllerID);
+
+    print("Hello","hi");
 
     while(true){
         handleMovements(ControllerID);
@@ -371,3 +377,4 @@ int main(){
 
 }
 // g++ "src\main.cpp" -lXInput -o main.exe
+//cd "c:\_PERSONAL\Coding\GIT\ControMouse\src\" ; if ($?) { g++ main.cpp -lXInput -o main } ; if ($?) { .\main }
