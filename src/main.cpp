@@ -1,13 +1,20 @@
 #include <windows.h>
 #include <xinput.h>
 #include <stdio.h>
+#include <iostream>
+#include <conio.h>
+#include <fcntl.h>
+#include <future>
 #include <math.h>
-
-#include "TUI.h"
+#include <io.h>
 
 INPUT input;
 POINT cursor;
 XINPUT_STATE state;
+
+int ControllerID;
+int MenuSelected;
+int OptionSelected;
 
 int CursorMoveSpeed = 8.0f;
 int CursorScrollSpeed = 16.0f;
@@ -117,6 +124,7 @@ void handleMouseMove(){
 
 void handleMouseClick(){
 
+
     if(KEY_PRESSED.GAMEPAD_A && !ACTION.GAMEPAD_A){
         input.mi.time = 0;
         input.type = INPUT_MOUSE;
@@ -179,170 +187,86 @@ void handleMouseScroll(){
 }
 
 void handleKeyboard(){
-
+    input.type = INPUT_KEYBOARD;
+    input.ki.wScan = 0;
+    input.ki.time = 0;
+    input.ki.dwExtraInfo = 0;
+    input.ki.wVk = 0;
+    input.ki.dwFlags = 0;
     if(KEY_PRESSED.GAMEPAD_START && !ACTION.GAMEPAD_START){
-        input.type = INPUT_KEYBOARD;
-        input.ki.wScan = 0;
-        input.ki.time = 0;
-        input.ki.dwExtraInfo = 0;
         input.ki.wVk = VK_LWIN;
-        input.ki.dwFlags = 0;
-
         SendInput(1, &input, sizeof(INPUT));
         ACTION.GAMEPAD_START = true;
     }else if(!KEY_PRESSED.GAMEPAD_START && ACTION.GAMEPAD_START){
-        input.type = INPUT_KEYBOARD;
-        input.ki.wScan = 0;
-        input.ki.time = 0;
-        input.ki.dwExtraInfo = 0;
-        input.ki.wVk = 0;
         input.ki.dwFlags = KEYEVENTF_KEYUP;
         SendInput(1, &input, sizeof(INPUT));
         ACTION.GAMEPAD_START = false;
     }
 
-    if(KEY_PRESSED.GAMEPAD_DPAD_UP && !ACTION.GAMEPAD_DPAD_UP){
-        input.type = INPUT_KEYBOARD;
-        input.ki.wScan = 0;
-        input.ki.time = 0;
-        input.ki.dwExtraInfo = 0;
+    if(KEY_PRESSED.GAMEPAD_DPAD_UP ){
         input.ki.wVk = VK_UP;
-        input.ki.dwFlags = 0;
-
         SendInput(1, &input, sizeof(INPUT));
         ACTION.GAMEPAD_DPAD_UP = true;
-    }else if(!KEY_PRESSED.GAMEPAD_DPAD_UP && ACTION.GAMEPAD_DPAD_UP){
-        input.type = INPUT_KEYBOARD;
-        input.ki.wScan = 0;
-        input.ki.time = 0;
-        input.ki.dwExtraInfo = 0;
-        input.ki.wVk = 0;
+    }else if(!KEY_PRESSED.GAMEPAD_DPAD_UP){
         input.ki.dwFlags = KEYEVENTF_KEYUP;
         SendInput(1, &input, sizeof(INPUT));
         ACTION.GAMEPAD_DPAD_UP = false;
     }
 
     if(KEY_PRESSED.GAMEPAD_DPAD_DOWN && !ACTION.GAMEPAD_DPAD_DOWN){
-        input.type = INPUT_KEYBOARD;
-        input.ki.wScan = 0;
-        input.ki.time = 0;
-        input.ki.dwExtraInfo = 0;
         input.ki.wVk = VK_DOWN;
-        input.ki.dwFlags = 0;
-
         SendInput(1, &input, sizeof(INPUT));
         ACTION.GAMEPAD_DPAD_DOWN = true;
     }else if(!KEY_PRESSED.GAMEPAD_DPAD_DOWN && ACTION.GAMEPAD_DPAD_DOWN){
-        input.type = INPUT_KEYBOARD;
-        input.ki.wScan = 0;
-        input.ki.time = 0;
-        input.ki.dwExtraInfo = 0;
-        input.ki.wVk = 0;
-        input.ki.dwFlags = 0;
         SendInput(1, &input, sizeof(INPUT));
         ACTION.GAMEPAD_DPAD_DOWN = false;
     }
 
     if(KEY_PRESSED.GAMEPAD_DPAD_LEFT && !ACTION.GAMEPAD_DPAD_LEFT){
-        input.type = INPUT_KEYBOARD;
-        input.ki.wScan = 0;
-        input.ki.time = 0;
-        input.ki.dwExtraInfo = 0;
         input.ki.wVk = VK_LEFT;
-        input.ki.dwFlags = 0;
-
         SendInput(1, &input, sizeof(INPUT));
         ACTION.GAMEPAD_DPAD_LEFT = true;
     }else if(!KEY_PRESSED.GAMEPAD_DPAD_LEFT && ACTION.GAMEPAD_DPAD_LEFT){
-        input.type = INPUT_KEYBOARD;
-        input.ki.wScan = 0;
-        input.ki.time = 0;
-        input.ki.dwExtraInfo = 0;
-        input.ki.wVk = 0;
         input.ki.dwFlags = KEYEVENTF_KEYUP;
         SendInput(1, &input, sizeof(INPUT));
         ACTION.GAMEPAD_DPAD_LEFT = false;
     }
 
     if(KEY_PRESSED.GAMEPAD_DPAD_RIGHT && !ACTION.GAMEPAD_DPAD_RIGHT){
-        input.type = INPUT_KEYBOARD;
-        input.ki.wScan = 0;
-        input.ki.time = 0;
-        input.ki.dwExtraInfo = 0;
         input.ki.wVk = VK_RIGHT;
-        input.ki.dwFlags = 0;
-
         SendInput(1, &input, sizeof(INPUT));
         ACTION.GAMEPAD_DPAD_RIGHT = true;
     }else if(!KEY_PRESSED.GAMEPAD_DPAD_RIGHT && ACTION.GAMEPAD_DPAD_RIGHT){
-        input.type = INPUT_KEYBOARD;
-        input.ki.wScan = 0;
-        input.ki.time = 0;
-        input.ki.dwExtraInfo = 0;
-        input.ki.wVk = 0;
         input.ki.dwFlags = KEYEVENTF_KEYUP;
         SendInput(1, &input, sizeof(INPUT));
         ACTION.GAMEPAD_DPAD_RIGHT = false;
     }
 
     if(KEY_PRESSED.GAMEPAD_LEFT_SHOULDER == 1.0f && !ACTION.GAMEPAD_LEFT_SHOULDER){
-        input.type = INPUT_KEYBOARD;
-        input.ki.wScan = 0;
-        input.ki.time = 0;
-        input.ki.dwExtraInfo = 0;
         input.ki.wVk = VK_BACK;
-        input.ki.dwFlags = 0;
-
         SendInput(1, &input, sizeof(INPUT));
         ACTION.GAMEPAD_LEFT_SHOULDER = 1.0f;
     }else if(KEY_PRESSED.GAMEPAD_LEFT_SHOULDER != 1.0f && ACTION.GAMEPAD_LEFT_SHOULDER){
-        input.type = INPUT_KEYBOARD;
-        input.ki.wScan = 0;
-        input.ki.time = 0;
-        input.ki.dwExtraInfo = 0;
-        input.ki.wVk = 0;
         input.ki.dwFlags = KEYEVENTF_KEYUP;
         SendInput(1, &input, sizeof(INPUT));
         ACTION.GAMEPAD_LEFT_SHOULDER = 0.0f;
     }
 
     if(KEY_PRESSED.GAMEPAD_B && !ACTION.GAMEPAD_B){
-        input.type = INPUT_KEYBOARD;
-        input.ki.wScan = 0;
-        input.ki.time = 0;
-        input.ki.dwExtraInfo = 0;
         input.ki.wVk = VK_ESCAPE;
-        input.ki.dwFlags = 0;
-
         SendInput(1, &input, sizeof(INPUT));
         ACTION.GAMEPAD_B = true;
     }else if(!KEY_PRESSED.GAMEPAD_B && ACTION.GAMEPAD_B){
-        input.type = INPUT_KEYBOARD;
-        input.ki.wScan = 0;
-        input.ki.time = 0;
-        input.ki.dwExtraInfo = 0;
-        input.ki.wVk = 0;
         input.ki.dwFlags = KEYEVENTF_KEYUP;
         SendInput(1, &input, sizeof(INPUT));
         ACTION.GAMEPAD_B = false;
     }
 
     if(KEY_PRESSED.GAMEPAD_Y && !ACTION.GAMEPAD_Y){
-        input.type = INPUT_KEYBOARD;
-        input.ki.wScan = 0;
-        input.ki.time = 0;
-        input.ki.dwExtraInfo = 0;
         input.ki.wVk = VK_RETURN;
-        input.ki.dwFlags = 0;
-
         SendInput(1, &input, sizeof(INPUT));
         ACTION.GAMEPAD_Y = true;
     }else if(!KEY_PRESSED.GAMEPAD_Y && ACTION.GAMEPAD_Y){
-        input.type = INPUT_KEYBOARD;
-        input.ki.wScan = 0;
-        input.ki.time = 0;
-        input.ki.dwExtraInfo = 0;
-        input.ki.wVk = 0;
         input.ki.dwFlags = KEYEVENTF_KEYUP;
         SendInput(1, &input, sizeof(INPUT));
         ACTION.GAMEPAD_Y = false;
@@ -350,26 +274,83 @@ void handleKeyboard(){
 
 }
 
-int main(){
+void showMenu(int menu = 1,int option = 1,int controllerid = -1){
     
-    int ControllerID = getController();
-    if(ControllerID == -1){
-        printf("No Controller Dectected!");
-        return 1;
-    }
-    
-    printf("Controller Dectected [dwUserIndex: %d], (ctrl + c) to stop.\n",ControllerID);
+    system ("CLS");
+    _setmode(_fileno(stdout), _O_U16TEXT);
+    //Width: 64  Height: 20
+    //SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 55);
 
-    print("Hello","hi");
+    if(menu == 1){
+        std::wcout << L"\
+┌──────────────────────────────────────────────────────────────┐\n\
+│                                                              │\n\
+│                         \e[1mControMouse\e[0m                          │\n\
+│                                                              │\n\
+│──────────────────────────────────────────────────────────────│\n\
+│                                                              │\n\
+│                                                              │\n\
+│                                                              │\n\
+│              ";if(option==1){SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10);}std::wcout <<"1. Settings";if(option==1){SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);}std::wcout <<L"                                     │\n\
+│              ";if(option==2){SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10);}std::wcout <<"2. About Us";if(option==2){SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);}std::wcout <<L"                                     │\n\
+│                                                              │\n\
+│              ";if(option==3){SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10);}std::wcout <<"3. Exit  :(";if(option==3){SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);}std::wcout <<L"                                     │\n\
+│                                                              │\n\
+│                                                              │\n\
+│                                                              │\n\
+│                                                              │\n\
+│                                                  use keyboard│\n\
+│──────────────────────────────────────────────────────────────│\n\
+│Build: v0.0.1                          ";if(controllerid != -1){std::wcout << L"    ";}if(controllerid==-1){SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);}std::wcout << L"Controller ";if(controllerid == -1){std::wcout<<"Not ";}std::wcout<<"Detected";if(controllerid == -1){SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);}std::wcout<<L"│\n\
+└──────────────────────────────────────────────────────────────┘\n";
+    }
+
+   MenuSelected = menu;
+   OptionSelected = option;
+   ControllerID = controllerid;
+}
+
+
+void handleMenu(int *menu, int *option){
+
+    //if(GetConsoleWindow() == GetForegroundWindow()){
+       
+        if(GetKeyState(VK_RETURN) & 0x8000){
+            if(*menu == 1 && *option == 3) exit(0);
+            *menu = *option;
+            *option = 1;
+        }else if(GetKeyState(VK_UP) & 0x8000){
+            *option = *option > 1 ? *option-1 : *option;
+        }else if(GetKeyState(VK_DOWN) & 0x8000){
+            *option = *option < 3 ? *option+1 : *option;
+        }
+
+    //}
+}
+
+int main(){
+
+    int controllerid =  -1;
+    int menuselected =   1;
+    int optionselected = 1;
 
     while(true){
-        handleMovements(ControllerID);
-        handleMouseMove();
-        handleMouseClick();
-        handleMouseScroll();
-        handleKeyboard();
 
-        //debugLog();
+        controllerid = getController();
+        
+        if(menuselected != MenuSelected || optionselected != OptionSelected || controllerid != ControllerID) 
+            showMenu(menuselected,optionselected,controllerid);
+
+        if(controllerid != -1){
+            handleMovements(controllerid);
+            handleMouseMove();
+            handleMouseClick();
+            handleMouseScroll();
+            handleKeyboard();
+            //debugLog();
+        }
+        
+        handleMenu(&menuselected,&optionselected);
         Sleep(10);
     }
         
@@ -377,4 +358,4 @@ int main(){
 
 }
 // g++ "src\main.cpp" -lXInput -o main.exe
-//cd "c:\_PERSONAL\Coding\GIT\ControMouse\src\" ; if ($?) { g++ main.cpp -lXInput -o main } ; if ($?) { .\main }
+//cd "c:\_PERSONAL\Coding\GIT\ControMouse\src\" ; if ($?) { g++ main.cpp -lXInput -o "..\build\main" } ; if ($?) { ..\build\main }
